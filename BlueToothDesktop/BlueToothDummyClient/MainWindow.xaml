@@ -1,0 +1,23 @@
+﻿<Window x:Class="BlueToothDummyClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BlueToothDummyClient"
+        mc:Ignorable="d"
+        Title="Happy Happy Feelings" Height="350" Width="400"
+        MinHeight="350"
+        MinWidth="400"
+        Icon="icon.ico">
+    <Grid>
+        <ComboBox x:Name="dropdownPorts" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="refreshPortsBtn" Content="Refresh" HorizontalAlignment="Left" Margin="135,10,0,0" VerticalAlignment="Top" Width="75" Click="refreshPortsBtn_Click"/>
+        <Button x:Name="buttonConnect" Content="Connect" HorizontalAlignment="Left" Margin="215,10,0,0" VerticalAlignment="Top" Width="75" Click="buttonConnect_Click"/>
+        <Button x:Name="buttonDisconnect" Content="Disconnect" HorizontalAlignment="Left" Margin="295,10,0,0" VerticalAlignment="Top" Width="75" Click="buttondisconnect_Click"/>
+        <TextBox x:Name="textBox" Margin="10,37,10,10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                 IsReadOnly="True"
+                 TextWrapping="Wrap"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+
+    </Grid>
+</Window>

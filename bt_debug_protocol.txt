@@ -1,0 +1,22 @@
+Message structure:
+	MSGLEN - MSGTYPE - PAYLOAD
+	uint16 -  uint8  - n bytes
+	 
+MSGTYPES:				 	Payload
+	000: Error			 	ASCII text
+	001: OK status           -
+	002: NOT OK status	 	ASCII text
+	003: Status request      -
+	004: Variable list      [name length (uint8) - ASCII name - variable type (uint8)]*m	(IN ORDER OF APPEARING IN MESSAGES LATER)
+	005: Variable values	[value (n bytes)]*m												(SAME ORDER)
+	006: Set speed value    (?)
+	007: Set steering value (?)
+	008: Set state machine  (?)
+	009: ...
+	
+VAR TYPES:
+	000: uint8
+	001: uint16
+	002: ...
+	003
+ 
