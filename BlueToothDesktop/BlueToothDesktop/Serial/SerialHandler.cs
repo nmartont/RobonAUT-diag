@@ -74,7 +74,7 @@ namespace BlueToothDesktop.Serial
         public void Connect(string portName)
         {
 
-            port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One);
+            port = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
             port.WriteTimeout = 1000;
 
             try
