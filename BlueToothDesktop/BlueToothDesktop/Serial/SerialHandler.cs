@@ -16,6 +16,7 @@ namespace BlueToothDesktop.Serial
         private byte[] extraBytes = new byte[0];
         private static bool desiredLittleEndian = true;
         private static bool converterLittleEndian = BitConverter.IsLittleEndian;
+        public static byte msgEndChar = 255;
 
         public SerialHandler(WindowCallback cb)
         {
@@ -133,27 +134,41 @@ namespace BlueToothDesktop.Serial
             int offset = 0;
             while (offset < extendedBuffer.Length)
             {
-                // check message length
-                byte[] msgLenB = new byte[2];
-                Buffer.BlockCopy(extendedBuffer, offset, msgLenB, 0, msgLenB.Length);
-                ushort msgLen = BitConverter.ToUInt16(msgLenB, 0);
+                // check for end message character
+                int index = -1;
+                for (int i = offset; i < extendedBuffer.Length; i++)
+                {
+                    if (extendedBuffer[i] == msgEndChar)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
 
-                // if msgLen is bigger than the remaining buffer length, save this part of the message to extra bits and break
-                if (msgLen > extendedBuffer.Length - offset)
+                // error handling, end of message can't be first element
+                if (index == 0)
+                {
+                    extraBytes = new byte[0];
+                    break;
+                }
+                else if (index != -1)
+                {
+                    extraBytes = new byte[0];
+                    // parse message
+                    byte[] msgBytes = new byte[index - offset]; // do not copy end of message char
+                    Buffer.BlockCopy(extendedBuffer, offset, msgBytes, 0, msgBytes.Length);
+
+                    // put the bytes in a queue
+                    IncomingQueue.Add(msgBytes);
+
+                    offset = index + 1;
+                }
+                else
                 {
                     extraBytes = new byte[extendedBuffer.Length - offset];
                     Buffer.BlockCopy(extendedBuffer, offset, extraBytes, 0, extraBytes.Length);
-                    break;
+                    offset = extendedBuffer.Length;
                 }
-
-                // if not, parse message
-                byte[] msgBytes = new byte[msgLen - msgLenB.Length];
-                Buffer.BlockCopy(extendedBuffer, offset + msgLenB.Length, msgBytes, 0, msgBytes.Length);
-
-                // put the bytes in a queue
-                IncomingQueue.Add(msgBytes);
-
-                offset += msgLen;
             }
         }
 
@@ -184,10 +199,19 @@ namespace BlueToothDesktop.Serial
 
             // remove msg type
             byte[] msgBytes = new byte[buffer.Length - 1];
-            Buffer.BlockCopy(buffer, 1, msgBytes, 0, buffer.Length - 1);
+            Buffer.BlockCopy(buffer, 1, msgBytes, 0, msgBytes.Length);
 
             // decode message into c# model
-            dynamic MessageModel = ModelDecoder.DecodeMessage(MsgType, msgBytes);
+            dynamic MessageModel = null;
+            try
+            {
+                MessageModel = ModelDecoder.DecodeMessage(MsgType, msgBytes);
+            }
+            catch (Exception ex)
+            {
+                Callback.AppendLog("Error while parsing message:\n" + ex.Message);
+                return;
+            }
 
             if (MessageModel == null)
             {
@@ -218,17 +242,23 @@ namespace BlueToothDesktop.Serial
 
         public void SendBytes(MessageTypeEnum msgType, byte[] payload)
         {
+            // In payload, swap 255 for 254
+            for (int i = 0; i < payload.Length; i++)
+            {
+                if (payload[i] == msgEndChar)
+                    payload[i] -= 1;
+            }
+
             // get message length
-            ushort msgLength = (ushort)(payload.Length + 3);
+            ushort msgLength = (ushort)(payload.Length + 2);
             // create byte array for the final message
             byte[] b = new byte[msgLength];
-            // put message length into first two bits
-            byte[] lenBytes = BitConverter.GetBytes(msgLength);
-            Buffer.BlockCopy(lenBytes, 0, b, 0, lenBytes.Length);
-            // put msg type into third bit
-            b[2] = (byte)msgType;
+            // put msg type into first bit
+            b[0] = (byte)msgType;
             // put payload at the end
-            Buffer.BlockCopy(payload, 0, b, 3, payload.Length);
+            Buffer.BlockCopy(payload, 0, b, 1, payload.Length);
+            // put end of message character at the end
+            b[msgLength - 1] = msgEndChar;
 
             // send message
             SendBytes(b);
@@ -238,7 +268,7 @@ namespace BlueToothDesktop.Serial
         {
             // get bytes
             var bytes = Model.GetByteArray();
-
+            
             // send bytes
             SendBytes(msgType, bytes);
         }

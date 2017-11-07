@@ -1,6 +1,6 @@
 Message structure:
-	MSGLEN - MSGTYPE - PAYLOAD
-	uint16 -  uint8  - n bytes
+	MSGTYPE - PAYLOAD - MSG_END
+	 uint8  - n bytes -  0xFF
 	 
 MSGTYPES:				 	Payload
 	000: Error			 	ASCII text
