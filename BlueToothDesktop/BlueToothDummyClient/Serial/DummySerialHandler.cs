@@ -102,7 +102,7 @@ namespace BlueToothDummyClient.Serial
         {
             while(runMemes)
             {
-                Thread.Sleep(10);
+                Thread.Sleep(1);
                 SendVarBytes();
             }
         }

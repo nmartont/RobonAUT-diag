@@ -25,6 +25,7 @@ namespace BlueToothDesktop
         private LSTBlueToothHandler BlueToothHandler;
         private GamePadHandler GamePHandler;
         private string[] PadNames;
+        private bool PerformanceMode = false;
 
         public MainWindow()
         {
@@ -41,6 +42,8 @@ namespace BlueToothDesktop
             dropdownPads.SelectedIndex = 0;
 
             SetBindings();
+
+            PerformanceMode = (bool)cbPerformance.IsChecked;
 
             AppendLog("LST BlueTooth Client ready...");
         }
@@ -88,6 +91,9 @@ namespace BlueToothDesktop
             // bind tables
             varListView.DataContext = BlueToothHandler.VarTypeList;
             varDataTable.DataContext = BlueToothHandler.VarData.DefaultView;
+
+            varDataTable.EnableColumnVirtualization = true;
+            varDataTable.EnableRowVirtualization = true;
         }
 
         private void refreshPortsBtn_Click(object sender, RoutedEventArgs e)
@@ -153,6 +159,16 @@ namespace BlueToothDesktop
         private void monitorStopButton_Click(object sender, RoutedEventArgs e)
         {
             BlueToothHandler.SendMonitorStopRequest();
+        }
+        
+        private void cbPerformance_Checked(object sender, RoutedEventArgs e)
+        {
+            PerformanceMode = true;
+        }
+
+        private void cbPerformance_Unchecked(object sender, RoutedEventArgs e)
+        {
+            PerformanceMode = false;
         }
 
         // helpers
@@ -221,16 +237,43 @@ namespace BlueToothDesktop
         public void AddRow(params object[] values)
         {
             Application.Current.Dispatcher.Invoke(new Action(() => {
+                //DataRow newRow = BlueToothHandler.VarData.NewRow();
+                
+                //for(int i = 0; i<values.Length; i++)
+                //{
+                //    newRow[i] = values[i];
+                //}
+
+                //BlueToothHandler.VarData.Rows.InsertAt(newRow, 0);
+                
+                // TODO logging
+
                 BlueToothHandler.VarData.Rows.Add(values);
 
-                if (varDataTable.Items.Count > 0)
+                if (!PerformanceMode)
                 {
-                    var border = VisualTreeHelper.GetChild(varDataTable, 0) as Decorator;
-                    if (border != null)
+                    // scroll to bottom
+                    if (varDataTable.Items.Count > 0)
                     {
-                        var scroll = border.Child as ScrollViewer;
-                        if (scroll != null) scroll.ScrollToEnd();
+                        var border = VisualTreeHelper.GetChild(varDataTable, 0) as Decorator;
+                        if (border != null)
+                        {
+                            var scroll = border.Child as ScrollViewer;
+                            if (scroll != null) scroll.ScrollToEnd();
+                        }
                     }
+                }
+                else
+                {
+                    // update statusbar with fresh data
+                    string s = "";
+
+                    foreach(object o in values)
+                    {
+                        s += o.ToString()+"; ";
+                    }
+
+                    lblData.Text = s;
                 }
             }));
         }
@@ -249,5 +292,7 @@ namespace BlueToothDesktop
                 lblPadControl.Text = v;
             }));
         }
+
     }
+    
 }
