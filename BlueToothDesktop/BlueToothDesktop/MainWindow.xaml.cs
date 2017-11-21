@@ -118,7 +118,11 @@ namespace BlueToothDesktop
 
         private void buttonPadConnect_Click(object sender, RoutedEventArgs e)
         {
-            GamePHandler.ConnectJoystick(dropdownPads.Text);
+            try
+            {
+                GamePHandler.ConnectJoystick(dropdownPads.Text);
+            }
+            catch { }
         }
 
         private void buttonPadDisconnect_Click(object sender, RoutedEventArgs e)
