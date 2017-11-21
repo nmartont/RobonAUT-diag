@@ -1,4 +1,5 @@
 ﻿using BlueToothDesktop.Serial;
+using GamePad.PadHandler;
 using System;
 using System.Data;
 using System.Globalization;
@@ -21,7 +22,9 @@ namespace BlueToothDesktop
         private int lineLimit = 500;
         private string newLine = "\n";
         private string[] PortNames;
-        private LSTSerialHandler SerHandler;
+        private LSTBlueToothHandler BlueToothHandler;
+        private GamePadHandler GamePHandler;
+        private string[] PadNames;
 
         public MainWindow()
         {
@@ -30,8 +33,13 @@ namespace BlueToothDesktop
             dropdownPorts.SelectedIndex = PortNames.Length - 2;
 
             // create SerialHandler
-            SerHandler = new LSTSerialHandler(this);
-            
+            BlueToothHandler = new LSTBlueToothHandler(this);
+
+            // create GamePad handler
+            GamePHandler = new GamePadHandler(BlueToothHandler);
+            RefreshPadDropDown();
+            dropdownPads.SelectedIndex = 0;
+
             SetBindings();
 
             AppendLog("LST BlueTooth Client ready...");
@@ -41,29 +49,45 @@ namespace BlueToothDesktop
         {
             // set bindings to UI elements
             Binding NotConnectedBinding = new Binding();
-            NotConnectedBinding.Source = SerHandler;
+            NotConnectedBinding.Source = BlueToothHandler;
             NotConnectedBinding.Path = new PropertyPath("NotConnected");
             NotConnectedBinding.Mode = BindingMode.OneWay;
             NotConnectedBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
             Binding ConnectedBinding = new Binding();
-            ConnectedBinding.Source = SerHandler;
+            ConnectedBinding.Source = BlueToothHandler;
             ConnectedBinding.Path = new PropertyPath("IsConnected");
             ConnectedBinding.Mode = BindingMode.OneWay;
             ConnectedBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+
+            Binding NotConnectedPadBinding = new Binding();
+            NotConnectedPadBinding.Source = GamePHandler;
+            NotConnectedPadBinding.Path = new PropertyPath("NotConnected");
+            NotConnectedPadBinding.Mode = BindingMode.OneWay;
+            NotConnectedPadBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+
+            Binding ConnectedPadBinding = new Binding();
+            ConnectedPadBinding.Source = GamePHandler;
+            ConnectedPadBinding.Path = new PropertyPath("IsConnected");
+            ConnectedPadBinding.Mode = BindingMode.OneWay;
+            ConnectedPadBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
             dropdownPorts.SetBinding(IsEnabledProperty, NotConnectedBinding);
             refreshPortsBtn.SetBinding(IsEnabledProperty, NotConnectedBinding);
             buttonConnect.SetBinding(IsEnabledProperty, NotConnectedBinding);
             buttonDisconnect.SetBinding(IsEnabledProperty, ConnectedBinding);
+            dropdownPads.SetBinding(IsEnabledProperty, NotConnectedPadBinding);
+            refreshPadsBtn.SetBinding(IsEnabledProperty, NotConnectedPadBinding);
+            buttonPadConnect.SetBinding(IsEnabledProperty, NotConnectedPadBinding);
+            buttonPadDisconnect.SetBinding(IsEnabledProperty, ConnectedPadBinding);
             monitorStartButton.SetBinding(IsEnabledProperty, ConnectedBinding);
             monitorStopButton.SetBinding(IsEnabledProperty, ConnectedBinding);
             statusButton.SetBinding(IsEnabledProperty, ConnectedBinding);
             varListButton.SetBinding(IsEnabledProperty, ConnectedBinding);
 
             // bind tables
-            varListView.DataContext = SerHandler.VarTypeList;
-            varDataTable.DataContext = SerHandler.VarData.DefaultView;
+            varListView.DataContext = BlueToothHandler.VarTypeList;
+            varDataTable.DataContext = BlueToothHandler.VarData.DefaultView;
         }
 
         private void refreshPortsBtn_Click(object sender, RoutedEventArgs e)
@@ -78,7 +102,7 @@ namespace BlueToothDesktop
 
         private void connectToPort(string portName)
         {
-            SerHandler.Connect(portName);
+            BlueToothHandler.Connect(portName);
         }
 
         private void buttondisconnect_Click(object sender, RoutedEventArgs e)
@@ -88,27 +112,43 @@ namespace BlueToothDesktop
 
         private void disconnectFromPort()
         {
-            SerHandler.Disconnect();
+            BlueToothHandler.Disconnect();
+        }
+
+
+        private void buttonPadConnect_Click(object sender, RoutedEventArgs e)
+        {
+            GamePHandler.ConnectJoystick(dropdownPads.Text);
+        }
+
+        private void buttonPadDisconnect_Click(object sender, RoutedEventArgs e)
+        {
+            GamePHandler.ReleaseJoystick();
+        }
+
+        private void refreshPadsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshPadDropDown();
         }
 
         private void statusButton_Click(object sender, RoutedEventArgs e)
         {
-            SerHandler.SendStatusRequest();
+            BlueToothHandler.SendStatusRequest();
         }
 
         private void varListButton_Click(object sender, RoutedEventArgs e)
         {
-            SerHandler.SendVarListRequest();
+            BlueToothHandler.SendVarListRequest();
         }
 
         private void monitorStartButton_Click(object sender, RoutedEventArgs e)
         {
-            SerHandler.SendMonitorStartRequest();
+            BlueToothHandler.SendMonitorStartRequest();
         }
 
         private void monitorStopButton_Click(object sender, RoutedEventArgs e)
         {
-            SerHandler.SendMonitorStopRequest();
+            BlueToothHandler.SendMonitorStopRequest();
         }
 
         // helpers
@@ -117,6 +157,13 @@ namespace BlueToothDesktop
             // get COM ports, set it to the dropdown
             PortNames = System.IO.Ports.SerialPort.GetPortNames();
             dropdownPorts.ItemsSource = PortNames;
+        }
+
+        private void RefreshPadDropDown()
+        {
+            // get gamepads, set it to the dropdown
+            PadNames = GamePHandler.GetGuids();
+            dropdownPads.ItemsSource = PadNames;
         }
 
         // interface functions
@@ -162,7 +209,7 @@ namespace BlueToothDesktop
         public void AddColumn(string colName)
         {
             Application.Current.Dispatcher.Invoke(new Action(() => {
-                SerHandler.VarData.Columns.Add(colName);
+                BlueToothHandler.VarData.Columns.Add(colName);
                 varDataTable.Columns.Add(new DataGridTextColumn() { Binding = new Binding(colName), Header = colName });
             }));
         }
@@ -170,7 +217,7 @@ namespace BlueToothDesktop
         public void AddRow(params object[] values)
         {
             Application.Current.Dispatcher.Invoke(new Action(() => {
-                SerHandler.VarData.Rows.Add(values);
+                BlueToothHandler.VarData.Rows.Add(values);
 
                 if (varDataTable.Items.Count > 0)
                 {
@@ -187,8 +234,15 @@ namespace BlueToothDesktop
         public void ClearColumns()
         {
             Application.Current.Dispatcher.Invoke(new Action(() => {
-                SerHandler.VarData.Columns.Clear();
+                BlueToothHandler.VarData.Columns.Clear();
                 varDataTable.Columns.Clear();
+            }));
+        }
+
+        public void SetPadControlText(string v)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() => {
+                lblPadControl.Text = v;
             }));
         }
     }

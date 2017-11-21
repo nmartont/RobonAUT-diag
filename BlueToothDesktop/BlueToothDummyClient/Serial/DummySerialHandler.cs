@@ -32,6 +32,9 @@ namespace BlueToothDummyClient.Serial
                 case MessageTypeEnum.VarListRequest:
                     SendVarTypes();
                     break;
+                case MessageTypeEnum.BTInput:
+                    Callback.AppendLog("Button" + messageModel.Key + ": " + messageModel.Value);
+                    break;
             }
         }
 

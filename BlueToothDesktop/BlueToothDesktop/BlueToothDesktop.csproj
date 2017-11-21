@@ -63,6 +63,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Enums\StatusEnum.cs" />
+    <Compile Include="Models\BTInputModel.cs" />
     <Compile Include="Models\ErrorStatusModel.cs" />
     <Compile Include="Models\MonitorStartModel.cs" />
     <Compile Include="Models\MonitorStopModel.cs" />
@@ -132,6 +133,12 @@
     <Resource Include="icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GamePad\GamePad.csproj">
+      <Project>{81A6CE13-8A50-4D32-85D9-DC6A2BB7E1DC}</Project>
+      <Name>GamePad</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

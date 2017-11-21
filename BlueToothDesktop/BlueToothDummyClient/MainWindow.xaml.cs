@@ -16,7 +16,7 @@ namespace BlueToothDummyClient
         private bool logData = true;
         private static readonly log4net.ILog log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private int lineLimit = 500;
+        private int lineLimit = 10;
         private string newLine = "\n";
         private string[] PortNames;
         private DummySerialHandler SerHandler;

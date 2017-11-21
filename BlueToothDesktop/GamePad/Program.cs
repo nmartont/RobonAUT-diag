@@ -1,4 +1,6 @@
-﻿using SharpDX.DirectInput;
+﻿using GamePad.Models;
+using GamePad.PadHandler;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,30 +42,24 @@ namespace GamePad
                 Environment.Exit(1);
             }
 
-            // Instantiate the joystick
-            var joystick = new Joystick(directInput, joystickGuid);
+            GamePadHandler Hand = new GamePadHandler(new JoyHandler());
+            Hand.ConnectJoystick(joystickGuid.ToString());
 
-            Console.WriteLine("Found Joystick/Gamepad with GUID: {0}", joystickGuid);
+            var v = Hand.GetGuids();
 
-            // Query all suported ForceFeedback effects
-            var allEffects = joystick.GetEffects();
-            foreach (var effectInfo in allEffects)
-                Console.WriteLine("Effect available {0}", effectInfo.Name);
-
-            // Set BufferSize in order to use buffered data.
-            joystick.Properties.BufferSize = 128;
-
-            // Acquire the joystick
-            joystick.Acquire();
-
-            // Poll events from joystick
+            // while shit so program doesn't stop
             while (true)
             {
-                joystick.Poll();
-                var datas = joystick.GetBufferedData();
-                foreach (var state in datas)
-                    Console.WriteLine(state);
+                System.Threading.Thread.Sleep(1000);
             }
+        }
+    }
+
+    class JoyHandler : JoyStickCallback
+    {
+        public void JoyStickInput(GamePadInputModel input)
+        {
+            
         }
     }
 }

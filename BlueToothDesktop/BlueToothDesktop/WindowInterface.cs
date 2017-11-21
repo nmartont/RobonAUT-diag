@@ -11,5 +11,6 @@
         void AddColumn(string colName);
         void AddRow(params object[] values);
         void ClearColumns();
+        void SetPadControlText(string v);
     }
 }

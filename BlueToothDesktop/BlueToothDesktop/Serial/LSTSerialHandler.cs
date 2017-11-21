@@ -3,17 +3,19 @@ using BlueToothDesktop.Enums;
 using BlueToothDesktop.Models;
 using System.Data;
 using BlueToothDesktop.Utils;
+using GamePad.PadHandler;
+using GamePad.Models;
 
 namespace BlueToothDesktop.Serial
 {
-    class LSTSerialHandler: SerialHandler
+    class LSTBlueToothHandler: SerialHandler, JoyStickCallback
     {
         private new LSTWindowCallback Callback;
         private StatusEnum Status = StatusEnum.OK;
         internal VarTypeListModel VarTypeList = new VarTypeListModel();
         internal DataTable VarData = new DataTable();
         
-        public LSTSerialHandler(LSTWindowCallback cb) : base(cb) {
+        public LSTBlueToothHandler(LSTWindowCallback cb) : base(cb) {
             Callback = cb;
             VarData.Columns.Add("Variables");
         }
@@ -134,6 +136,27 @@ namespace BlueToothDesktop.Serial
             // send bytes
             SendBytes(msgType, Model);
         }
+        
+        public void JoyStickInput(GamePadInputModel input)
+        {
+            if (input.Value < 0) input.Value = 1; // remove the negative number from the D-Pad
 
+            // write the info to the GUI somehow
+            Callback.SetPadControlText(input.ToString());
+
+            if (IsConnected)
+            {
+                // get model
+                BTInputModel Model = new BTInputModel {
+                    Value = Convert.ToUInt16(input.Value),
+                    Key = Convert.ToByte(input.InputNumber)
+                };
+                // message type
+                MessageTypeEnum msgType = MessageTypeEnum.BTInput;
+
+                // send UART message
+                SendBytes(msgType, Model);
+            }
+        }
     }
 }

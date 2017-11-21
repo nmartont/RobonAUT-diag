@@ -10,5 +10,6 @@
         VarListRequest,
         MonitorStart,
         MonitorStop,
+        BTInput
     }
 }

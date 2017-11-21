@@ -27,6 +27,8 @@ namespace BlueToothDesktop.Utils
                     return VarListRequestModel.DecodeByteArray(msgBytes);
                 case MessageTypeEnum.VarValues:
                     return msgBytes;
+                case MessageTypeEnum.BTInput:
+                    return BTInputModel.DecodeByteArray(msgBytes);
                 default:
                     return null;
             }
