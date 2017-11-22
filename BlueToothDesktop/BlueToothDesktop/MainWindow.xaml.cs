@@ -16,7 +16,6 @@ namespace BlueToothDesktop
     /// </summary>
     public partial class MainWindow : Window, LSTWindowCallback
     {
-        private bool logData = true;
         private static readonly log4net.ILog log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private int lineLimit = 500;
@@ -198,7 +197,7 @@ namespace BlueToothDesktop
                 textBox.AppendText(textToAppend);
 
                 // log
-                if (logData) log.Info(textToAppend);
+                // if (logData) log.Info(textToAppend);
 
                 // limit to 1000 lines
                 string text = textBox.Text;
@@ -237,17 +236,16 @@ namespace BlueToothDesktop
         public void AddRow(params object[] values)
         {
             Application.Current.Dispatcher.Invoke(new Action(() => {
-                //DataRow newRow = BlueToothHandler.VarData.NewRow();
-                
-                //for(int i = 0; i<values.Length; i++)
-                //{
-                //    newRow[i] = values[i];
-                //}
+                // logging
+                string s = "";
 
-                //BlueToothHandler.VarData.Rows.InsertAt(newRow, 0);
-                
-                // TODO logging
+                foreach (object o in values)
+                {
+                    s += o.ToString() + ";";
+                }
+                log.Info(s);
 
+                // add value to the datatable
                 BlueToothHandler.VarData.Rows.Add(values);
 
                 if (!PerformanceMode)
@@ -266,13 +264,6 @@ namespace BlueToothDesktop
                 else
                 {
                     // update statusbar with fresh data
-                    string s = "";
-
-                    foreach(object o in values)
-                    {
-                        s += o.ToString()+"; ";
-                    }
-
                     lblData.Text = s;
                 }
             }));

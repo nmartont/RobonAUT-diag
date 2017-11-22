@@ -14,7 +14,9 @@ namespace BlueToothDesktop.Serial
         private StatusEnum Status = StatusEnum.OK;
         internal VarTypeListModel VarTypeList = new VarTypeListModel();
         internal DataTable VarData = new DataTable();
-        
+        private static readonly log4net.ILog log =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public LSTBlueToothHandler(LSTWindowCallback cb) : base(cb) {
             Callback = cb;
             VarData.Columns.Add("Variables");
@@ -49,6 +51,14 @@ namespace BlueToothDesktop.Serial
                         }
                     }));
                     Callback.AppendLog("Variable list received.");
+
+                    // log colnames
+                    string s = "";
+                    foreach (VarTypeModel Model in messageModel.VarTypes)
+                    {
+                        s += Model.Name + " (" + Model.VarType + ");";
+                    }
+                    log.Info(s);
                     break;
                 case MessageTypeEnum.VarValues:
                     try
