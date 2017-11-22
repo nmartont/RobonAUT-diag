@@ -70,6 +70,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Charts\BasicLineExample.xaml.cs">
+      <DependentUpon>BasicLineExample.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Enums\StatusEnum.cs" />
     <Compile Include="Models\BTInputModel.cs" />
     <Compile Include="Models\ErrorStatusModel.cs" />
@@ -83,6 +86,10 @@
     <Compile Include="Utils\ByteArrayHandler.cs" />
     <Compile Include="Utils\ModelDecoder.cs" />
     <Compile Include="WindowInterface.cs" />
+    <Page Include="Charts\BasicLineExample.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -148,9 +155,7 @@
       <Name>GamePad</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Charts\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
