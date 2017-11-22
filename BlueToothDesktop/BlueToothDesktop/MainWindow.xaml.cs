@@ -43,7 +43,7 @@ namespace BlueToothDesktop
             SetBindings();
 
             PerformanceMode = (bool)cbPerformance.IsChecked;
-
+            
             AppendLog("LST BlueTooth Client ready...");
         }
         

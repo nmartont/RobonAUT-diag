@@ -70,6 +70,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Charts\BasicColumn.xaml.cs">
+      <DependentUpon>BasicColumn.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Charts\BasicLineExample.xaml.cs">
       <DependentUpon>BasicLineExample.xaml</DependentUpon>
     </Compile>
@@ -86,6 +89,10 @@
     <Compile Include="Utils\ByteArrayHandler.cs" />
     <Compile Include="Utils\ModelDecoder.cs" />
     <Compile Include="WindowInterface.cs" />
+    <Page Include="Charts\BasicColumn.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Charts\BasicLineExample.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

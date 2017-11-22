@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BlueToothDesktop"
-        xmlns:controls="clr-namespace:Wpf.CartesianChart.BasicLine"
+        xmlns:bar_graphs="clr-namespace:Wpf.CartesianChart.Basic_Bars"
+        xmlns:line_graphs="clr-namespace:Wpf.CartesianChart.BasicLine"
         mc:Ignorable="d"
         Title="Bluetooth LST" Height="650" Width="800" MinHeight="550" MinWidth="600"
         Icon="icon.ico">
@@ -59,9 +60,14 @@
                     <CheckBox x:Name="cbPerformance" Content="Performance mode" HorizontalAlignment="Right" Margin="0,0,92,35" VerticalAlignment="Bottom" Checked="cbPerformance_Checked" Unchecked="cbPerformance_Unchecked" IsChecked="True"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Graphs">
+            <TabItem Header="Bar graph">
                 <Grid Margin="0,0,0,0">
-                    <controls:BasicLineExample/>
+                    <bar_graphs:BasicColumn x:Name="lstBarGraph"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Line graph">
+                <Grid Margin="0,0,0,0">
+                    <line_graphs:BasicLineExample x:Name="lstLineGraph"/>
                 </Grid>
             </TabItem>
         </TabControl>
