@@ -8,7 +8,9 @@
         xmlns:line_graphs="clr-namespace:Wpf.CartesianChart.BasicLine"
         mc:Ignorable="d"
         Title="Bluetooth LST" Height="650" Width="800" MinHeight="550" MinWidth="600"
-        Icon="icon.ico">
+        Icon="icon.ico"
+        KeyDown="Window_KeyDown"
+        KeyUp="Window_KeyUp">
     <Grid Margin="0,0,0,0">
         <TabControl>
             <TabItem Header="General">

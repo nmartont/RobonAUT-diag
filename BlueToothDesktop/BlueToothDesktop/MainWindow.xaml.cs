@@ -1,5 +1,6 @@
 ﻿using BlueToothDesktop.Serial;
 using GamePad.PadHandler;
+using GamePad.Models;
 using System;
 using System.Data;
 using System.Globalization;
@@ -284,6 +285,104 @@ namespace BlueToothDesktop
             }));
         }
 
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            // Switch case for keys
+            switch (e.Key)
+            {
+                case System.Windows.Input.Key.A:
+                    GamePadInputModel M = new GamePadInputModel {
+                        InputName="X",
+                        InputNumber=0,
+                        Timestamp=0,
+                        Value=0
+                    };
+                    BlueToothHandler.JoyStickInput(M);
+                    break;
+                case System.Windows.Input.Key.D:
+                    GamePadInputModel MM = new GamePadInputModel
+                    {
+                        InputName = "X",
+                        InputNumber = 0,
+                        Timestamp = 0,
+                        Value = 65535
+                    };
+                    BlueToothHandler.JoyStickInput(MM);
+                    break;
+                case System.Windows.Input.Key.W:
+                    GamePadInputModel MMM = new GamePadInputModel
+                    {
+                        InputName = "RotationZ",
+                        InputNumber = 20,
+                        Timestamp = 0,
+                        Value = 0
+                    };
+                    BlueToothHandler.JoyStickInput(MMM);
+                    break;
+                case System.Windows.Input.Key.S:
+                    GamePadInputModel MMMM = new GamePadInputModel
+                    {
+                        InputName = "RotationZ",
+                        InputNumber = 20,
+                        Timestamp = 0,
+                        Value = 65535
+                    };
+                    BlueToothHandler.JoyStickInput(MMMM);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            // Switch case for keys
+            switch (e.Key)
+            {
+                case System.Windows.Input.Key.A:
+                    GamePadInputModel M = new GamePadInputModel
+                    {
+                        InputName = "X",
+                        InputNumber = 0,
+                        Timestamp = 0,
+                        Value = 32767
+                    };
+                    BlueToothHandler.JoyStickInput(M);
+                    break;
+                case System.Windows.Input.Key.D:
+                    GamePadInputModel MM = new GamePadInputModel
+                    {
+                        InputName = "X",
+                        InputNumber = 0,
+                        Timestamp = 0,
+                        Value = 32767
+                    };
+                    BlueToothHandler.JoyStickInput(MM);
+                    break;
+                case System.Windows.Input.Key.W:
+                    GamePadInputModel MMM = new GamePadInputModel
+                    {
+                        InputName = "RotationZ",
+                        InputNumber = 20,
+                        Timestamp = 0,
+                        Value = 32767
+                    };
+                    BlueToothHandler.JoyStickInput(MMM);
+                    break;
+                case System.Windows.Input.Key.S:
+                    GamePadInputModel MMMM = new GamePadInputModel
+                    {
+                        InputName = "RotationZ",
+                        InputNumber = 20,
+                        Timestamp = 0,
+                        Value = 32767
+                    };
+                    BlueToothHandler.JoyStickInput(MMMM);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
     
 }
